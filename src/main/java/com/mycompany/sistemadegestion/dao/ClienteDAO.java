@@ -5,6 +5,7 @@
 package com.mycompany.sistemadegestion.dao;
 
 import com.mycompany.sistemadegestion.models.Cliente;
+import com.mysql.jdbc.StringUtils;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -20,6 +21,7 @@ import java.util.logging.Logger;
  * @author Santiago
  */
 public class ClienteDAO {
+
     public Connection conectar() {
         String baseDeDatos = "personas";
         String usuario = "root";
@@ -39,8 +41,7 @@ public class ClienteDAO {
         }
         return conexion;
     }
-    
-    
+
     public void agregar(Cliente cliente) {
         try {
             Connection conexion = conectar();
@@ -52,18 +53,30 @@ public class ClienteDAO {
         }
 
     }
-    
+
+    public void modificar(Cliente cliente) {
+        try {
+            Connection conexion = conectar();
+            String sql = "UPDATE `personas` SET `nombre` = '" + cliente.getNombre() + "', `apellido` = '" + cliente.getApellido() + "', `telefono` = '" + cliente.getTelefono() + "', `email` = '" + cliente.getEmail() + "' WHERE `personas`.`id` =" + cliente.getId() + ";";
+            Statement statement = conexion.createStatement();
+            statement.execute(sql);
+        } catch (Exception ex) {
+            Logger.getLogger(ClienteDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+    }
+
     public List<Cliente> listar() {
         List<Cliente> listado = new ArrayList<Cliente>();
-        
+
         try {
             Connection conexion = conectar();
 
             String sql = "SELECT * FROM `personas`";
             Statement statement = conexion.createStatement();
             ResultSet resultado = statement.executeQuery(sql);
-            
-            while(resultado.next()){
+
+            while (resultado.next()) {
                 Cliente cliente = new Cliente();
                 cliente.setId(resultado.getString("id"));
                 cliente.setNombre(resultado.getString("nombre"));
@@ -75,21 +88,29 @@ public class ClienteDAO {
         } catch (Exception ex) {
             Logger.getLogger(ClienteDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
+
         return listado;
 
     }
-    
+
     public void eliminar(String id) {
         try {
             Connection conexion = conectar();
 
-            String sql = "DELETE FROM `personas` WHERE `personas`.`id` ="+id;
+            String sql = "DELETE FROM `personas` WHERE `personas`.`id` =" + id;
             Statement statement = conexion.createStatement();
             statement.execute(sql);
         } catch (Exception ex) {
             Logger.getLogger(ClienteDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
 
+    }
+
+    public void guardar(Cliente clienteIni) {
+        if(StringUtils.isEmptyOrWhitespaceOnly(clienteIni.getId())){
+            agregar(clienteIni);
+        }else{
+            modificar(clienteIni);
+        }
     }
 }
