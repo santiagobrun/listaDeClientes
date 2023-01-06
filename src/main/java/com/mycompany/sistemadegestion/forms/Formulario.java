@@ -3,8 +3,10 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
 //
-package com.mycompany.sistemadegestion;
+package com.mycompany.sistemadegestion.forms;
 
+import com.mycompany.sistemadegestion.dao.ClienteDAO;
+import com.mycompany.sistemadegestion.models.Cliente;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -16,6 +18,8 @@ import javax.swing.JOptionPane;
  * @author Santiago
  */
 public class Formulario extends javax.swing.JFrame {
+
+    List<Cliente> lista = new ArrayList<>();
 
     /**
      * Creates new form Formulario
@@ -48,6 +52,11 @@ public class Formulario extends javax.swing.JFrame {
         Santiago = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        addComponentListener(new java.awt.event.ComponentAdapter() {
+            public void componentShown(java.awt.event.ComponentEvent evt) {
+                formComponentShown(evt);
+            }
+        });
 
         btnGuardar.setText("Guardar");
         btnGuardar.addActionListener(new java.awt.event.ActionListener() {
@@ -114,8 +123,7 @@ public class Formulario extends javax.swing.JFrame {
                         .addGap(120, 120, 120))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addComponent(btnGuardar)
-                        .addGap(157, 157, 157))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addGap(78, 78, 78)
                         .addComponent(Santiago)
                         .addContainerGap())))
         );
@@ -156,7 +164,7 @@ public class Formulario extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-    private List<Cliente> listaClientes = new ArrayList<Cliente>();
+
     private void btnGuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGuardarActionPerformed
 
         Cliente clienteIni = new Cliente();
@@ -164,28 +172,39 @@ public class Formulario extends javax.swing.JFrame {
         clienteIni.setApellido(this.txtApellido.getText());
         clienteIni.setEmail(this.txtEmail.getText());
         clienteIni.setTelefono(this.txtTelefono.getText());
-        
-        listaClientes.add(clienteIni);
+
+        ClienteDAO dao = new ClienteDAO();
+        dao.agregar(clienteIni);
+
         actualizarLista();
         limpiarCajasTxt();
         JOptionPane.showMessageDialog(rootPane, "Agregado Correctamente!!");
+
     }//GEN-LAST:event_btnGuardarActionPerformed
 
     private void btnEliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEliminarActionPerformed
         int pos = this.listClientes.getSelectedIndex();
-        if (pos != -1) {
-            listaClientes.remove(pos);
-            actualizarLista();
-            JOptionPane.showMessageDialog(rootPane, "Eliminado Correctamente!!");
+        Cliente cliente = lista.get(pos);
+        ClienteDAO dao = new ClienteDAO();
 
-        }
+        dao.eliminar(cliente.getId());
+        actualizarLista();
+        JOptionPane.showMessageDialog(rootPane, "Eliminado Correctamente!!");
+
+
     }//GEN-LAST:event_btnEliminarActionPerformed
 
+    private void formComponentShown(java.awt.event.ComponentEvent evt) {//GEN-FIRST:event_formComponentShown
+        actualizarLista();
+    }//GEN-LAST:event_formComponentShown
+
     private void actualizarLista() {
+        ClienteDAO dao = new ClienteDAO();
         DefaultListModel datos = new DefaultListModel();
-        for (int i = 0; i <  listaClientes.size(); i++) {
-            Cliente cliente = listaClientes.get(i);
-                datos.addElement(cliente.getNombreCompleto());
+        lista = dao.listar();
+        for (int i = 0; i < lista.size(); i++) {
+            Cliente cliente = lista.get(i);
+            datos.addElement(cliente.getNombreCompleto());
         }
         this.listClientes.setModel(datos);
     }

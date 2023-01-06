@@ -3,13 +3,15 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 //
-package com.mycompany.sistemadegestion;
+package com.mycompany.sistemadegestion.models;
 
 /**
  *
  * @author Santiago
  */
 public class Cliente {
+    
+    private String id;
     private String nombre;
     private String apellido;
     private String email;
@@ -49,5 +51,15 @@ public class Cliente {
     public String getNombreCompleto(){
         return nombre + " " + apellido;
     }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+    
+    
     
 }   
